@@ -67,8 +67,11 @@ namespace AnimationTool.Tabs
             Clock = new GameClock();
             Clock.Start();
 
-            var currentAnimation = AnimationManager.SelectedAnimationContainer.CurrentAnimation.Name;
-            AnimationManager.SelectedAnimationContainer.SetAnimation(currentAnimation, EPlayback.Loop);
+            if (null != AnimationManager.SelectedAnimationContainer.CurrentAnimation)
+            {
+                var currentAnimation = AnimationManager.SelectedAnimationContainer.CurrentAnimation.Name;
+                AnimationManager.SelectedAnimationContainer.SetAnimation(currentAnimation, EPlayback.Loop);
+            }
         }
 
         protected virtual void CreateItemControl(Garment garment)

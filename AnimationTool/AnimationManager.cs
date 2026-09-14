@@ -130,48 +130,7 @@ namespace AnimationTool
             ShowAnchorBonesInAnimationTab = true;
 
             AnimationLoader = new AnimationsLoader(Renderer, 1f);
-            AnimationLoader.LoadContent();
-
-            //AnimationLoader.LoadMai();
-            //AnimationLoader.LoadMaiJson();
-
-            //AnimationLoader.LoadKnight();
-            //AnimationLoader.LoadDragon();
-
-            //AnimationLoader.LoadWeddingDan();
-            //AnimationLoader.LoadWeddingTabby();
-            //AnimationLoader.LoadWeddingCarrie();
-            //AnimationLoader.LoadWeddingBestMen();
-            //AnimationLoader.LoadWeddingVenue();
-
-            //AnimationLoader.LoadRoboJetValkyrie();
-
-            //AnimationLoader.LoadBeachBlocksCharacter();
-
-            //AnimationLoader.LoadGrimoireCharacter();
-            //AnimationLoader.LoadGrimoireWarrior();
-            //AnimationLoader.LoadGrimoireArcher();
-            //AnimationLoader.LoadGrimoireBroom();
-            AnimationLoader.LoadGrimoireDragon();
-            //AnimationLoader.LoadGrimoireDragonFireball();
-            //AnimationLoader.LoadGrimoireGoblin();
-            //AnimationLoader.LoadGrimoireGoblinAx();
-            //AnimationLoader.LoadGrimoireArcherArrow();
-            //AnimationLoader.LoadGrimoireSkeleton();
-            //AnimationLoader.LoadGrimoireMummy();
-            //AnimationLoader.LoadGrimoireTree();
-            //AnimationLoader.LoadGrimoireWolf();
-            //AnimationLoader.LoadGrimoireWizard();
-            //AnimationLoader.LoadGrimoirePumpkin();
-
-            //AnimationLoader.LoadTassleCarrie();
-
-            //AnimationLoader.LoadPajamoramaApple();
-
-            var animation = Animations.Animations.First().Key;
-            Animations.SetAnimation(animation, EPlayback.Forwards);
-
-            SelectedAnimationContainer = Animations;
+            NewModel();
         }
 
         public void RestartAnimation()
@@ -217,6 +176,11 @@ namespace AnimationTool
 
         public void Update(GameClock clock, Vector2 position)
         {
+            if (null == SelectedAnimationContainer.Skeleton.RootBone)
+            {
+                return;
+            }
+
             //update the model thing
             SelectedAnimationContainer.Update(clock, position, false, 0.0f, false);
             SelectedAnimationContainer.UpdateRagdoll();
@@ -235,14 +199,152 @@ namespace AnimationTool
             HackImageIndex = 0;
         }
 
-        public void Save()
+        public void NewModel()
         {
-            AnimationLoader.Save();
+            AnimationLoader.LoadContent();
+            SelectedAnimationContainer = Animations;
         }
 
-        public void SaveJson()
+        public void OpenModel()
         {
-            AnimationLoader.SaveJson();
+            var path = FileDialogs.OpenFile("xml", "Open Model");
+            if (null == path)
+            {
+                return;
+            }
+
+            NewModel();
+
+            var modelFile = new Filename { File = path };
+            AnimationLoader.ModelFile = modelFile;
+            AnimationLoader.Animations.ReadSkeletonXml(modelFile, Renderer);
+        }
+
+        public void OpenAnimation()
+        {
+            var path = FileDialogs.OpenFile("xml", "Open Animation");
+            if (null == path)
+            {
+                return;
+            }
+
+            var animationFile = new Filename { File = path };
+            AnimationLoader.Animations.ReadAnimationXml(animationFile);
+
+            var animation = AnimationLoader.Animations.Animations.First().Key;
+            AnimationLoader.Animations.SetAnimation(animation, EPlayback.Forwards);
+        }
+
+        public void NewGarment()
+        {
+            var garment = new Garment(AnimationLoader.Animations.Scale);
+            garment.AddToSkeleton();
+            AnimationLoader.Garments.Add(garment);
+        }
+
+        public void OpenGarment()
+        {
+            var path = FileDialogs.OpenFile("xml", "Open Garment");
+            if (null == path)
+            {
+                return;
+            }
+
+            var garmentFile = new Filename { File = path };
+            var garment = new Garment(garmentFile, AnimationLoader.Animations.Skeleton, Renderer);
+            garment.AddToSkeleton();
+            AnimationLoader.Garments.Add(garment);
+        }
+
+        public void Save()
+        {
+            if (!HasPath(AnimationLoader.Animations.SkeletonFile) || !HasPath(AnimationLoader.Animations.AnimationFile))
+            {
+                SaveAs();
+                return;
+            }
+
+            AnimationLoader.Animations.WriteXml();
+            SaveGarments();
+        }
+
+        public void SaveAs()
+        {
+            var skeletonPath = FileDialogs.SaveFile("xml", "Model.xml", "Save Model As");
+            if (null == skeletonPath)
+            {
+                return;
+            }
+
+            var animationPath = FileDialogs.SaveFile("xml", "Animations.xml", "Save Animation As");
+            if (null == animationPath)
+            {
+                return;
+            }
+
+            AnimationLoader.Animations.WriteSkeletonXml(new Filename { File = skeletonPath });
+            AnimationLoader.Animations.WriteAnimationXml(new Filename { File = animationPath });
+            AnimationLoader.ModelFile = AnimationLoader.Animations.SkeletonFile;
+
+            SaveGarments();
+        }
+
+        public void SaveAsJson()
+        {
+            var skeletonPath = FileDialogs.SaveFile("json", "Model.json", "Save Model As JSON");
+            if (null == skeletonPath)
+            {
+                return;
+            }
+
+            var animationPath = FileDialogs.SaveFile("json", "Animations.json", "Save Animation As JSON");
+            if (null == animationPath)
+            {
+                return;
+            }
+
+            AnimationLoader.Animations.WriteSkeletonJson(new Filename { File = skeletonPath });
+            AnimationLoader.Animations.WriteAnimationJson(new Filename { File = animationPath });
+            AnimationLoader.ModelFile = AnimationLoader.Animations.SkeletonFile;
+
+            foreach (var garment in AnimationLoader.Garments)
+            {
+                var defaultName = HasPath(garment.GarmentFile) ? garment.GarmentFile.GetFileNoExt() : "Garment";
+                var path = FileDialogs.SaveFile("json", $"{defaultName}.json", "Save Garment As JSON");
+                if (null == path)
+                {
+                    continue;
+                }
+
+                garment.WriteJsonFile(new Filename { File = path });
+            }
+        }
+
+        private void SaveGarments()
+        {
+            foreach (var garment in AnimationLoader.Garments)
+            {
+                if (HasPath(garment.GarmentFile))
+                {
+                    garment.WriteXml();
+                }
+                else
+                {
+                    var defaultName = string.IsNullOrEmpty(garment.Name) ? "Garment" : garment.Name;
+                    var path = FileDialogs.SaveFile("xml", $"{defaultName}.xml", "Save Garment As");
+                    if (null == path)
+                    {
+                        continue;
+                    }
+
+                    garment.WriteXmlFile(new Filename { File = path });
+                }
+            }
+        }
+
+        private static bool HasPath(Filename filename)
+        {
+            return null != filename && filename.HasFilename;
         }
 
         #endregion //Methods
