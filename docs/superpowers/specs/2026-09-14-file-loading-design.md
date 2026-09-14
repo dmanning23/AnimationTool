@@ -38,7 +38,15 @@ file operations — File/Open dialogs — instead.
 - JSON support for *opening* model/animation/garment files (Open dialogs are
   XML-only; JSON stays available only via the existing Save As JSON path).
 - New error-handling/validation UX for malformed or missing files — matches
-  today's behavior (exceptions surface as-is).
+  today's behavior (exceptions surface as-is). The one exception: starting
+  blank is a genuinely new state that a couple of *other*, pre-existing files
+  (`AnimationManager.Update(GameClock, Vector2)`, `GarmentTab.LoadContent()`)
+  never had to handle, since a character was always hardcoded-loaded before
+  any tab was reachable. Those two get a small guard each so navigating to
+  the Garment/Test tab before opening anything doesn't crash — this is about
+  making "start blank" itself safe, not about handling bad file content.
+  Other tabs (e.g. `AnimationTab.cs`) may have similar latent assumptions;
+  auditing every tab for this is out of scope.
 - Automated test coverage — this is UI wiring in a MonoGame tool with no
   existing AnimationTool test project; verification is manual.
 
@@ -46,22 +54,33 @@ file operations — File/Open dialogs — instead.
 
 ### Native file dialogs
 
-Add a small `FileDialogs` static helper class in `AnimationTool` wrapping
-[NativeFileDialogSharp](https://www.nuget.org/packages/NativeFileDialogSharp)
-(wraps the cross-platform `nativefiledialog` C library; supports Windows and
-Mac, matching this MonoGame DesktopGL build). It exposes:
+**Revised during planning:** the NuGet package originally proposed here
+(`NativeFileDialogSharp`) turned out to ship an x86_64-only macOS native
+binary, which cannot load into this machine's `osx-arm64` .NET process — its
+only other alternative on nuget.org (`NativeFileDialogExtendedSharp`) ships
+no native binary at all. Both were verified by downloading and inspecting
+the packages directly (`lipo -info` on the bundled `.dylib`).
+
+Instead, add a small `FileDialogs` static helper class in `AnimationTool`
+that shells out to macOS's `osascript`, using the `choose file` / `choose
+file name` AppleScript commands — these are implemented on top of
+`NSOpenPanel`/`NSSavePanel`, so the result is the same native dialog, with
+no third-party dependency and no native compilation step. It exposes:
 
 ```csharp
 static class FileDialogs
 {
-    // Returns the chosen path, or null if the user cancelled.
-    public static string OpenFile(string filterList /* e.g. "xml" */);
-    public static string SaveFile(string filterList, string defaultPath = null);
+    // Returns the chosen POSIX path, or null if the user cancelled.
+    public static string OpenFile(string extension, string prompt);
+    // Returns the chosen POSIX path (always ending in ".extension"), or null if cancelled.
+    public static string SaveFile(string extension, string defaultFileName, string prompt);
 }
 ```
 
 Native dialogs block synchronously; they're only invoked from menu button
-click handlers, so no game-loop/async changes are needed.
+click handlers, so no game-loop/async changes are needed. This is Mac-only —
+if the tool is ever run on Windows/Linux, a second implementation would be
+needed there.
 
 ### AnimationManager API
 
