@@ -1,5 +1,4 @@
 ﻿using AnimationLib;
-using AnimationLoader;
 using FilenameBuddy;
 using GameTimer;
 using Microsoft.Xna.Framework;
