@@ -122,6 +122,12 @@ checks each piece:
   each `garment.WriteXml()` + each additional animation container's
   `WriteAnimationXml()`).
 
+Note: unlike the legacy `AnimationsLoader.Save()`, the implemented `Save()`/
+`SaveAs()` do not write out `AdditionalAnimations` — nothing in the new
+File/Garment menu flow populates that list (it was only ever populated by
+the now-uncalled legacy `LoadXxx()` methods), so this is a no-op omission
+today, not a behavior change for any reachable path.
+
 `SaveAs()` / `SaveAsJson()` always prompt, then set the relevant `Filename`
 properties (`SkeletonFile`, `AnimationFile` on `AnimationContainer`; via
 `Garment.WriteXmlFile(path)` for garments, which doesn't require setting the

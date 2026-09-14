@@ -38,7 +38,7 @@ namespace AnimationTool.Screens
             //Add a toolbar at the top of the screen
             var tabs = new StackLayout(StackAlignment.Left)
             {
-                Position = new Point(910, 0),
+                Position = new Point(782, 0),
                 Horizontal = HorizontalAlignment.Left,
                 Vertical = VerticalAlignment.Top,
             };

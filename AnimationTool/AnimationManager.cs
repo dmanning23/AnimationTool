@@ -202,6 +202,7 @@ namespace AnimationTool
         public void NewModel()
         {
             AnimationLoader.LoadContent();
+            AnimationLoader.ModelFile = new Filename();
             SelectedAnimationContainer = Animations;
         }
 
@@ -228,6 +229,11 @@ namespace AnimationTool
                 return;
             }
 
+            if (null == AnimationLoader.Animations.Skeleton.RootBone)
+            {
+                return;
+            }
+
             var animationFile = new Filename { File = path };
             AnimationLoader.Animations.ReadAnimationXml(animationFile);
 
@@ -246,6 +252,11 @@ namespace AnimationTool
         {
             var path = FileDialogs.OpenFile("xml", "Open Garment");
             if (null == path)
+            {
+                return;
+            }
+
+            if (null == AnimationLoader.Animations.Skeleton.RootBone)
             {
                 return;
             }
@@ -303,9 +314,17 @@ namespace AnimationTool
                 return;
             }
 
+            // WriteSkeletonJson/WriteAnimationJson permanently reassign SkeletonFile/AnimationFile
+            // to the JSON path, so snapshot and restore them afterward: SaveAsJson is meant to be
+            // an "export" that doesn't disturb the model's actual (XML) save location.
+            var originalSkeletonFile = AnimationLoader.Animations.SkeletonFile;
+            var originalAnimationFile = AnimationLoader.Animations.AnimationFile;
+
             AnimationLoader.Animations.WriteSkeletonJson(new Filename { File = skeletonPath });
             AnimationLoader.Animations.WriteAnimationJson(new Filename { File = animationPath });
-            AnimationLoader.ModelFile = AnimationLoader.Animations.SkeletonFile;
+
+            AnimationLoader.Animations.SkeletonFile = originalSkeletonFile;
+            AnimationLoader.Animations.AnimationFile = originalAnimationFile;
 
             foreach (var garment in AnimationLoader.Garments)
             {
@@ -316,6 +335,9 @@ namespace AnimationTool
                     continue;
                 }
 
+                // Unlike the skeleton/animation above, Garment.GarmentFile's setter is private
+                // (in the AnimationLib project), so it can't be snapshotted/restored here — this
+                // call DOES permanently retarget each garment's save path to its JSON export path.
                 garment.WriteJsonFile(new Filename { File = path });
             }
         }

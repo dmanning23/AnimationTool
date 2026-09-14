@@ -16,7 +16,7 @@ namespace AnimationTool
         /// </summary>
         public static string OpenFile(string extension, string prompt)
         {
-            var script = $"POSIX path of (choose file with prompt \"{EscapeForAppleScript(prompt)}\" of type {{\"{EscapeForAppleScript(extension)}\"}})";
+            var script = $"tell application \"System Events\" to activate\nPOSIX path of (choose file with prompt \"{EscapeForAppleScript(prompt)}\" of type {{\"{EscapeForAppleScript(extension)}\"}})";
             return RunOsaScript(script);
         }
 
@@ -27,7 +27,7 @@ namespace AnimationTool
         /// </summary>
         public static string SaveFile(string extension, string defaultFileName, string prompt)
         {
-            var script = $"POSIX path of (choose file name with prompt \"{EscapeForAppleScript(prompt)}\" default name \"{EscapeForAppleScript(defaultFileName)}\")";
+            var script = $"tell application \"System Events\" to activate\nPOSIX path of (choose file name with prompt \"{EscapeForAppleScript(prompt)}\" default name \"{EscapeForAppleScript(defaultFileName)}\")";
             var path = RunOsaScript(script);
             if (null == path)
             {
