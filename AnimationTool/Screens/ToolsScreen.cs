@@ -35,11 +35,19 @@ namespace AnimationTool.Screens
         {
             await base.LoadContent();
 
+            AddTabs();
+            AddHamburgers();
+            AddEditMenuItems();
+        }
+
+        private void AddTabs()
+        {
             //Add a toolbar at the top of the screen
             var tabs = new StackLayout(StackAlignment.Left)
             {
-                Position = new Point(782, 0),
-                Horizontal = HorizontalAlignment.Left,
+                Alignment = StackAlignment.Right,
+                Position = new Point(Resolution.ScreenArea.Right, Resolution.ScreenArea.Top),
+                //Horizontal = HorizontalAlignment.Right,
                 Vertical = VerticalAlignment.Top,
             };
 
@@ -84,6 +92,20 @@ namespace AnimationTool.Screens
                 LoadTab(new GarmentTab(this, AnimationManager));
             };
             tabs.AddItem(garmentTabButton);
+            tabs.Items.Reverse();
+
+            AddItem(tabs);
+        }
+
+        private void AddHamburgers()
+        {
+            //Add a toolbar at the top of the screen
+            var tabs = new StackLayout(StackAlignment.Left)
+            {
+                Position = new Point(Resolution.ScreenArea.Left, Resolution.ScreenArea.Top),
+                Horizontal = HorizontalAlignment.Left,
+                Vertical = VerticalAlignment.Top,
+            };
 
             var fileMenu = new Hamburger(Content.Load<Texture2D>("menu"), true, ScreenManager);
             fileMenu.AddItem(new Label("File", Content, FontSize.Small)
@@ -110,17 +132,16 @@ namespace AnimationTool.Screens
             tabs.AddItem(garmentMenu);
 
             AddItem(tabs);
-            AddAsMenuItems();
         }
 
-        private void AddAsMenuItems()
+        private void AddEditMenuItems()
         {
             var stack = new StackLayout()
             {
-                Alignment = StackAlignment.Top,
-                Position = new Point(Resolution.ScreenArea.Left, 0),
+                Alignment = StackAlignment.Bottom,
+                Position = new Point(Resolution.ScreenArea.Left, Resolution.TitleSafeArea.Bottom),
                 Horizontal = HorizontalAlignment.Left,
-                Vertical = VerticalAlignment.Top,
+                //Vertical = VerticalAlignment.Top,
             };
 
             var hamburgerItems = new List<ContextMenuItem>();
@@ -143,6 +164,12 @@ namespace AnimationTool.Screens
 
         private void CreateButton(ContextMenuItem hamburgerItem, StackLayout stack)
         {
+            var relLayout = new RelativeLayout
+            {
+                Vertical = VerticalAlignment.Top,
+                Horizontal = HorizontalAlignment.Left
+            };
+
             var button = new StackLayoutButton()
             {
                 Vertical = VerticalAlignment.Center,
@@ -164,13 +191,16 @@ namespace AnimationTool.Screens
             });
             button.AddItem(new Label(hamburgerItem.IconText, Content, FontSize.Small)
             {
-                Vertical = VerticalAlignment.Top,
+                Vertical = VerticalAlignment.Center,
                 Horizontal = HorizontalAlignment.Left,
                 TransitionObject = new WipeTransitionObject(TransitionWipeType.PopLeft)
             });
             button.OnClick += (obj, e) => hamburgerItem.ClickEvent(obj, e);
 
-            stack.AddItem(button);
+            relLayout.AddItem(button);
+            relLayout.Size = button.Rect.Size.ToVector2();
+
+            stack.AddItem(relLayout);
             stack.AddItem(new Shim()
             {
                 Size = new Vector2(8f, 8f)
@@ -212,11 +242,13 @@ namespace AnimationTool.Screens
                 Size = new Vector2(75f, 32f),
                 HasOutline = true,
             };
-            tabButton.AddItem(new Label(tabName, Content, FontSize.Small)
+            var label = new Label(tabName, Content, FontSize.Small)
             {
                 Horizontal = HorizontalAlignment.Center,
                 Vertical = VerticalAlignment.Center,
-            });
+            };
+            tabButton.AddItem(label);
+            tabButton.Size = label.Rect.Size.ToVector2();
 
             return tabButton;
         }
