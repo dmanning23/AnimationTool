@@ -85,23 +85,32 @@ namespace AnimationTool.Screens
             };
             tabs.AddItem(garmentTabButton);
 
+            var fileMenu = new Hamburger(Content.Load<Texture2D>("menu"), true, ScreenManager);
+            fileMenu.AddItem(new Label("File", Content, FontSize.Small)
+            {
+                Horizontal = HorizontalAlignment.Center,
+                Vertical = VerticalAlignment.Bottom,
+            });
+            fileMenu.AddItem(Content.Load<Texture2D>("menu"), "New", FileNew);
+            fileMenu.AddItem(Content.Load<Texture2D>("menu"), "Open Model", FileOpenModel);
+            fileMenu.AddItem(Content.Load<Texture2D>("menu"), "Open Animation", FileOpenAnimation);
+            fileMenu.AddItem(Content.Load<Texture2D>(@"icons\save"), "Save", FileSave);
+            fileMenu.AddItem(Content.Load<Texture2D>(@"icons\save"), "Save As", FileSaveAs);
+            fileMenu.AddItem(Content.Load<Texture2D>(@"icons\save"), "Save As JSON", FileSaveAsJson);
+            tabs.AddItem(fileMenu);
+
+            var garmentMenu = new Hamburger(Content.Load<Texture2D>("menu"), true, ScreenManager);
+            garmentMenu.AddItem(new Label("Garment", Content, FontSize.Small)
+            {
+                Horizontal = HorizontalAlignment.Center,
+                Vertical = VerticalAlignment.Bottom,
+            });
+            garmentMenu.AddItem(Content.Load<Texture2D>("menu"), "New", GarmentNew);
+            garmentMenu.AddItem(Content.Load<Texture2D>("menu"), "Open", GarmentOpen);
+            tabs.AddItem(garmentMenu);
+
             AddItem(tabs);
             AddAsMenuItems();
-        }
-
-        private void AddHamburgerMenu()
-        {
-            var hamburger = new Hamburger(Content.Load<Texture2D>("menu"), true, ScreenManager);
-            hamburger.AddItem(Content.Load<Texture2D>(@"icons\save"), "Save", Save);
-            hamburger.AddItem(Content.Load<Texture2D>(@"icons\save"), "SaveJson", SaveJson);
-            hamburger.AddItem(Content.Load<Texture2D>(@"icons\undo"), "Undo", Undo);
-            hamburger.AddItem(Content.Load<Texture2D>(@"icons\redo"), "Redo", Redo);
-            hamburger.AddItem(Content.Load<Texture2D>(@"icons\copy"), "Copy", Copy);
-            hamburger.AddItem(Content.Load<Texture2D>(@"icons\paste"), "Paste", Paste);
-            hamburger.AddItem(Content.Load<Texture2D>(@"icons\pasteSpecial"), "PasteSpecial", PasteSpecial);
-            hamburger.AddItem(Content.Load<Texture2D>(@"icons\leftright"), "Mirror", Mirror);
-            hamburger.AddItem(Content.Load<Texture2D>(@"icons\unkey"), "UnKey", UnKey);
-            AddItem(hamburger);
         }
 
         private void AddAsMenuItems()
@@ -115,8 +124,6 @@ namespace AnimationTool.Screens
             };
 
             var hamburgerItems = new List<ContextMenuItem>();
-            hamburgerItems.Add(new ContextMenuItem(Content.Load<Texture2D>(@"icons\save"), "Save", Save));
-            hamburgerItems.Add(new ContextMenuItem(Content.Load<Texture2D>(@"icons\save"), "SaveJson", SaveJson));
             hamburgerItems.Add(new ContextMenuItem(Content.Load<Texture2D>(@"icons\undo"), "Undo", Undo));
             hamburgerItems.Add(new ContextMenuItem(Content.Load<Texture2D>(@"icons\redo"), "Redo", Redo));
             hamburgerItems.Add(new ContextMenuItem(Content.Load<Texture2D>(@"icons\copy"), "Copy", Copy));
@@ -231,14 +238,49 @@ namespace AnimationTool.Screens
 
         #region Hamburger Event Handlers
 
-        private void Save(object obj, ClickEventArgs e)
+        private void FileNew(object obj, ClickEventArgs e)
+        {
+            AnimationManager.NewModel();
+            ClearTabsAndScreens();
+        }
+
+        private void FileOpenModel(object obj, ClickEventArgs e)
+        {
+            AnimationManager.OpenModel();
+            ClearTabsAndScreens();
+        }
+
+        private void FileOpenAnimation(object obj, ClickEventArgs e)
+        {
+            AnimationManager.OpenAnimation();
+            ClearTabsAndScreens();
+        }
+
+        private void FileSave(object obj, ClickEventArgs e)
         {
             AnimationManager.Save();
         }
 
-        private void SaveJson(object obj, ClickEventArgs e)
+        private void FileSaveAs(object obj, ClickEventArgs e)
         {
-            AnimationManager.SaveJson();
+            AnimationManager.SaveAs();
+        }
+
+        private void FileSaveAsJson(object obj, ClickEventArgs e)
+        {
+            AnimationManager.SaveAsJson();
+        }
+
+        private void GarmentNew(object obj, ClickEventArgs e)
+        {
+            AnimationManager.NewGarment();
+            ClearTabsAndScreens();
+        }
+
+        private void GarmentOpen(object obj, ClickEventArgs e)
+        {
+            AnimationManager.OpenGarment();
+            ClearTabsAndScreens();
         }
 
         private void Undo(object obj, ClickEventArgs e)
