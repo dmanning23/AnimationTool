@@ -295,9 +295,9 @@ namespace AnimationTool.Tabs
             {
                 base.Draw(gameTime);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 

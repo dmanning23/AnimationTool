@@ -218,6 +218,8 @@ namespace AnimationTool
             var modelFile = new Filename { File = path };
             AnimationLoader.ModelFile = modelFile;
             AnimationLoader.Animations.ReadSkeletonXml(modelFile, Renderer);
+
+            Filename.SetCurrentDirectory(path);
         }
 
         public void OpenAnimation()
