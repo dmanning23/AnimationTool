@@ -68,7 +68,7 @@ namespace AnimationTool.Screens
                     Image.LoadImage(AnimationManager.Renderer);
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
