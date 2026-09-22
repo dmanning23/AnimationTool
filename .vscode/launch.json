@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "AnimationTool",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/AnimationTool/bin/Debug/net8.0/AnimationTool.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/AnimationTool",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "env": {
+                "MGFXC_WINE_PATH": "/Users/danmanning/.winemonogame"
+            }
+        }
+    ]
+}

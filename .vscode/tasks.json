@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/AnimationTool/AnimationTool.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "options": {
+                "env": {
+                    "MGFXC_WINE_PATH": "/Users/danmanning/.winemonogame"
+                }
+            },
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
