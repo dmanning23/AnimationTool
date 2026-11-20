@@ -27,8 +27,8 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
     <PackageReference Include="RenderBuddy" Version="5.*" />
     <PackageReference Include="UndoRedoBuddy" Version="5.*" />
-    <PackageReference Include="AnimationLib" Version="5.*" />
-    <PackageReference Include="AnimationLibWidgets" Version="5.*" />
+    <PackageReference Include="AnimationLib"  Version="5.*"  />
+    <PackageReference Include="AnimationLibWidgets"  Version="5.*"  />
     <PackageReference Include="MenuBuddy" Version="5.*" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="CollectPackageReferences">

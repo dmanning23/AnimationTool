@@ -120,7 +120,7 @@ namespace AnimationTool
             Renderer.ClearLights();
             Renderer.AddDirectionalLight(new Vector3(0f, 1f, .1f), new Color(.2f, 0f, .3f));
             Renderer.AddDirectionalLight(new Vector3(-.5f, -1f, -.1f), new Color(1f, .7f, 0f, 0.75f));
-            Renderer.AddDirectionalLight(new Vector3(.5f, -1f, .6f), new Color(1f, 1f, .75f));
+            Renderer.AddDirectionalLight(new Vector3(.5f, -1f, .8f), new Color(1f, 1f, .75f));
 
             Renderer.TextureLoader = new TextureFileLoader();
 
